@@ -9,7 +9,7 @@ Encodings = []
 Names = []
 
 # Carga de nombres y codificaciones desde el archivo pickle
-with open('/home/orin/Downloads/pyPro-20250701T235910Z-1-001/pyPro/pyPro/FaceRecognizer/train.pkl', 'rb') as f:
+with open('train.pkl', 'rb') as f:
     Names = pickle.load(f)
     Encodings = pickle.load(f)
 
