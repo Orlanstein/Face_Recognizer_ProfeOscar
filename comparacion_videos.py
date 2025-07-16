@@ -117,20 +117,25 @@ while True:
         
         # Extraer región facial
         face_region = frame_rgb[y:y+h, x:x+w]
-        face_encoding = face_recognition.face_encodings(face_region)
         
-        if len(face_encoding) > 0:
-            matches = face_recognition.compare_faces(encodings_conocidos, face_encoding[0], tolerance=UMBRAL_CONFIANZA)
-            name = "Desconocido"
+        # Inside your video processing loop
+        face_locations = face_recognition.face_locations(frame)
+
+        for face_location in face_locations:
+            top, right, bottom, left = face_location
             
-            if True in matches:
-                first_match_index = matches.index(True)
-                name = nombres_conocidos[first_match_index]
+            # Get encoding using FULL FRAME + LOCATION
+            face_encodings = face_recognition.face_encodings(
+                frame, 
+                known_face_locations=[face_location],
+                num_jitters=1
+            )
             
-            # Dibujar rectángulo y nombre
-            cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 255, 0), 2)
-            cv2.putText(frame, name, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 1)
-    
+            if not face_encodings:
+                continue  # Skip if no encoding found
+                
+            face_encoding = face_encodings[0]
+            
     # Mostrar información de rendimiento
     cv2.putText(frame, f"Tiempo: {tiempo_actual:.1f}s", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
     cv2.putText(frame, f"HOG: {len(hog_rects)} rostros", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
